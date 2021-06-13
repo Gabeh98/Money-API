@@ -27,11 +27,13 @@ public class CategoriaResource {
     @PostMapping
     public ResponseEntity<Categoria> Create (@Valid @RequestBody Categoria categoria, HttpServletResponse response){
        Categoria categoriaSalva = categoriaRepository.save(categoria);
-       URI uri =  ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
-                .buildAndExpand(categoriaSalva.getCodigo()).toUri();
+       URI uri = ServletUriComponentsBuilder
+               .fromCurrentRequestUri().path("/{codigo}")
+               .buildAndExpand(categoriaSalva.getCodigo()).toUri();
        response.setHeader("Location",uri.toASCIIString());
        return ResponseEntity.created(uri).body(categoriaSalva);
     }
+
     @GetMapping("/{codigo}")
     public Categoria FindByCode(@PathVariable Long codigo){
         return this.categoriaRepository.findById(codigo).orElse(null);
