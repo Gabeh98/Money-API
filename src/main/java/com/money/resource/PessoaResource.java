@@ -2,8 +2,10 @@ package com.money.resource;
 import com.money.event.RecursoCriadoEvento;
 import com.money.model.Pessoa;
 import com.money.repository.PessoaRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +43,12 @@ public class PessoaResource {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteByCode(@PathVariable Long codigo){
         this.pessoaRepository.deleteById(codigo);
+    }
+    @PutMapping("{codigo}")
+    public Pessoa update(@PathVariable Long codigo, @RequestBody Pessoa pessoa) {
+        Pessoa pessoaSalva = this.pessoaRepository.findById(codigo)
+                .orElseThrow(() -> new EmptyResultDataAccessException(1));
+        BeanUtils.copyProperties(pessoa, pessoaSalva, "codigo");
+        return this.pessoaRepository.save(pessoaSalva);
     }
 }

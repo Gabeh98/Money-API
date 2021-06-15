@@ -3,8 +3,10 @@ package com.money.resource;
 import com.money.event.RecursoCriadoEvento;
 import com.money.model.Categoria;
 import com.money.repository.CategoriaRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,5 +43,11 @@ public class CategoriaResource {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteByCode(@PathVariable Long codigo){
         this.categoriaRepository.deleteById(codigo);
+    }
+    @PutMapping("/{codigo}")
+    public Categoria update (@PathVariable Long codigo, @RequestBody Categoria categoria){
+        Categoria categoriaSalva = this.categoriaRepository.findById(codigo).orElseThrow(()-> new EmptyResultDataAccessException(1));
+        BeanUtils.copyProperties(categoria,categoriaSalva,"codigo");
+        return this.categoriaRepository.save(categoriaSalva);
     }
 }
