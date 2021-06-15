@@ -20,6 +20,7 @@ public class CategoriaResource {
     private CategoriaRepository categoriaRepository;
     @Autowired
     private ApplicationEventPublisher publisher;
+
     @GetMapping
     public List<Categoria> List(){
         return categoriaRepository.findAll();
@@ -35,5 +36,10 @@ public class CategoriaResource {
     @GetMapping("/{codigo}")
     public Categoria FindByCode(@PathVariable Long codigo){
         return this.categoriaRepository.findById(codigo).orElse(null);
+    }
+    @DeleteMapping("/{codigo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteByCode(@PathVariable Long codigo){
+        this.categoriaRepository.deleteById(codigo);
     }
 }

@@ -19,6 +19,7 @@ public class PessoaResource {
     private PessoaRepository pessoaRepository;
     @Autowired
     private ApplicationEventPublisher publisher;
+
     @GetMapping
     public List<Pessoa> List(){
         return pessoaRepository.findAll();
@@ -34,5 +35,11 @@ public class PessoaResource {
     @GetMapping("/{codigo}")
     public Pessoa findByCode(@PathVariable Long codigo){
         return this.pessoaRepository.findById(codigo).orElse(null);
+    }
+
+    @DeleteMapping("/{codigo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteByCode(@PathVariable Long codigo){
+        this.pessoaRepository.deleteById(codigo);
     }
 }
