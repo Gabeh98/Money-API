@@ -5,13 +5,13 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name="pessoa")
+@Table(name = "pessoa")
 public class Pessoa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long codigo;
     @NotNull
-    @Size(min = 3,max = 20)
+    @Size(min = 3, max = 20)
     private String nome;
     @NotNull
     private boolean ativo;

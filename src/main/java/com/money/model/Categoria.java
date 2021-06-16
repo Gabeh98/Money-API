@@ -1,4 +1,5 @@
 package com.money.model;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -12,20 +13,25 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long codigo;
     @NotNull
-    @Size(min = 3,max = 20)
+    @Size(min = 3, max = 20)
     private String nome;
+
     public long getCodigo() {
         return codigo;
     }
+
     public void setCodigo(long codigo) {
         this.codigo = codigo;
     }
+
     public String getNome() {
         return nome;
     }
+
     public void setNome(String nome) {
         this.nome = nome;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -33,6 +39,7 @@ public class Categoria {
         Categoria categoria = (Categoria) o;
         return codigo == categoria.codigo && Objects.equals(nome, categoria.nome);
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(codigo, nome);
