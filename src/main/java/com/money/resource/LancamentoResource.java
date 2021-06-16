@@ -3,8 +3,11 @@ package com.money.resource;
 import com.money.event.RecursoCriadoEvento;
 import com.money.model.Lancamento;
 import com.money.repository.LancamentoRepository;
+import com.money.service.LancamentoService;
+import com.money.service.exception.PessoaInactiveException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +23,8 @@ public class LancamentoResource {
     LancamentoRepository lancamentoRepository;
     @Autowired
     private ApplicationEventPublisher publisher;
+    @Autowired
+    private LancamentoService lancamentoService;
 
     @GetMapping
     public List<Lancamento> findAll() {
@@ -33,7 +38,7 @@ public class LancamentoResource {
 
     @PostMapping
     public ResponseEntity<Lancamento> create(@Valid @RequestBody Lancamento lancamento, HttpServletResponse response) {
-        Lancamento lancamentoSalvo = lancamentoRepository.save(lancamento);
+        Lancamento lancamentoSalvo = lancamentoService.save(lancamento);
         publisher.publishEvent(new RecursoCriadoEvento(this, response, lancamento.getCodigo()));
         return ResponseEntity.status(HttpStatus.CREATED).body(lancamentoSalvo);
     }
@@ -42,5 +47,9 @@ public class LancamentoResource {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteByCode(@PathVariable Long codigo) {
         this.lancamentoRepository.deleteById(codigo);
+    }
+    @ExceptionHandler({PessoaInactiveException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handlePessoaInactiveException(RuntimeException ex) {
     }
 }

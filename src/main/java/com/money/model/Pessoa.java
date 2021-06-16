@@ -1,5 +1,7 @@
 package com.money.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -17,6 +19,12 @@ public class Pessoa {
     private boolean ativo;
     @Embedded
     private Endereco endereco;
+
+    @JsonIgnore
+    @Transient
+    public boolean isInactive(){
+        return !this.ativo;
+    }
 
     public long getCodigo() {
         return codigo;
