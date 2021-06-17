@@ -3,6 +3,7 @@ package com.money.resource;
 import com.money.event.RecursoCriadoEvento;
 import com.money.model.Lancamento;
 import com.money.repository.LancamentoRepository;
+import com.money.repository.filter.LancamentoFilter;
 import com.money.service.LancamentoService;
 import com.money.service.exception.PessoaInactiveException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,8 @@ public class LancamentoResource {
     private LancamentoService lancamentoService;
 
     @GetMapping
-    public List<Lancamento> findAll() {
-        return lancamentoRepository.findAll();
+    public List<Lancamento> filter(LancamentoFilter lancamentoFilter) {
+        return lancamentoRepository.filter(lancamentoFilter);
     }
 
     @GetMapping("/{codigo}")
