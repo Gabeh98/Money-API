@@ -2,6 +2,9 @@ package com.money.repository.lancamento;
 
 import com.money.model.Lancamento;
 import com.money.repository.filter.LancamentoFilter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -18,7 +21,7 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
     private EntityManager manager;
 
     @Override
-    public List<Lancamento> filter(LancamentoFilter lancamentoFilter) {
+    public Page<Lancamento> filter(LancamentoFilter lancamentoFilter, Pageable pageable) {
         CriteriaBuilder builder = manager.getCriteriaBuilder();
         CriteriaQuery<Lancamento> criteria = builder.createQuery(Lancamento.class);
         Root<Lancamento> root = criteria.from(Lancamento.class);
@@ -26,9 +29,9 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
         Predicate[] predicates = createRestrictions(lancamentoFilter, builder, root);
         criteria.where(predicates);
         TypedQuery<Lancamento> query = manager.createQuery(criteria);
-        return query.getResultList();
+        restricoesDePaginacao(query,pageable);
+        return new PageImpl<>(query.getResultList(),pageable,total(lancamentoFilter));
     }
-
     private Predicate[] createRestrictions(LancamentoFilter lancamentoFilter, CriteriaBuilder builder, Root<Lancamento> root) {
         List<Predicate> predicates = new ArrayList<>();
         if (lancamentoFilter.getDescricao() != null) {
@@ -41,5 +44,21 @@ public class LancamentoRepositoryImpl implements LancamentoRepositoryQuery {
             predicates.add(builder.lessThanOrEqualTo(root.get("dataVencimento"),lancamentoFilter.getDataVencimentoAte()));
         }
         return predicates.toArray(new Predicate[predicates.size()]);
+    }
+    private void restricoesDePaginacao(TypedQuery<Lancamento> query, Pageable pageable) {
+        int paginaAtual = pageable.getPageNumber();
+        int totalRegistroPorPagina = pageable.getPageSize();
+        int primeiroRegistroDaPagina = paginaAtual * totalRegistroPorPagina;
+        query.setFirstResult(primeiroRegistroDaPagina);
+        query.setMaxResults(totalRegistroPorPagina);
+    }
+    private Long total(LancamentoFilter lancamentoFilter) {
+        CriteriaBuilder builder = manager.getCriteriaBuilder();
+        CriteriaQuery<Long>criteria = builder.createQuery(Long.class);
+        Root<Lancamento> root = criteria.from(Lancamento.class);
+        Predicate[] predicates = createRestrictions(lancamentoFilter,builder,root);
+        criteria.where(predicates);
+        criteria.select(builder.count(root));
+        return manager.createQuery(criteria).getSingleResult();
     }
 }
