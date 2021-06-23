@@ -25,12 +25,12 @@ public class PessoaResource {
     private ApplicationEventPublisher publisher;
 
     @GetMapping
-    public List<Pessoa> List() {
+    public List<Pessoa> list() {
         return pessoaRepository.findAll();
     }
 
     @PostMapping
-    public ResponseEntity<Pessoa> Create(@Valid @RequestBody Pessoa pessoa, HttpServletResponse response) {
+    public ResponseEntity<Pessoa> create(@Valid @RequestBody Pessoa pessoa, HttpServletResponse response) {
         Pessoa pessoaSalva = pessoaRepository.save(pessoa);
         publisher.publishEvent(new RecursoCriadoEvento(this, response, pessoa.getCodigo()));
         return ResponseEntity.status(HttpStatus.CREATED).body(pessoaSalva);

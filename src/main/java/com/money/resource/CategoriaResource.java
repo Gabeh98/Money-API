@@ -25,19 +25,19 @@ public class CategoriaResource {
     private ApplicationEventPublisher publisher;
 
     @GetMapping
-    public List<Categoria> List() {
+    public List<Categoria> list() {
         return categoriaRepository.findAll();
     }
 
     @PostMapping
-    public ResponseEntity<Categoria> Create(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
+    public ResponseEntity<Categoria> create(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
         Categoria categoriaSalva = categoriaRepository.save(categoria);
         publisher.publishEvent(new RecursoCriadoEvento(this, response, categoria.getCodigo()));
         return ResponseEntity.status(HttpStatus.CREATED).body(categoriaSalva);
     }
 
     @GetMapping("/{codigo}")
-    public Categoria FindByCode(@PathVariable Long codigo) {
+    public Categoria findByCode(@PathVariable Long codigo) {
         return this.categoriaRepository.findById(codigo).orElse(null);
     }
 
